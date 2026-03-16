@@ -1,23 +1,34 @@
-import logo from './logo.svg';
-import './App.css';
+import { useState } from "react";
+import SearchBar from "./components/SearchBar";
+import StockCard from "./components/StockCard";
+import StockChart from "./components/StockChart";
+import { fetchCurrentStock, fetchHistoricalStock } from "./services/stockApi";
 
 function App() {
+  const [stock, setStock] = useState(null);
+  const [chartData, setChartData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const handleSearch = async (symbol) => {
+    setLoading(true);
+    const currentData = await fetchCurrentStock(symbol);
+    const historicalData = await fetchHistoricalStock(symbol);
+    setStock(currentData);
+    setChartData(historicalData);
+    setLoading(false);
+  };
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+    <div className = "app-container">
+      <header className = "app-header">
+        <h1>Stock Tracker</h1>
       </header>
+      <SearchBar onSearch = {handleSearch} />
+      {loading && <p className = "loading">Loading stock data...</p>}
+      {stock && <StockCard stock = {stock} />}
+      {chartData.length > 0 && (
+        <div className = "chart-container">
+          <StockChart data = {chartData} />
+        </div>
+      )}
     </div>
   );
 }
