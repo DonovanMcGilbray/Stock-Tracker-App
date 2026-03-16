@@ -4,7 +4,8 @@ function SearchBar({ onSearch }) {
     const [ticker, setTicker] = useState("");
     const handleSubmit = (e) => {
         e.preventDefault();
-        onSearch(ticker);
+        if(!ticker.trim()) return;
+        onSearch(ticker.toUpperCase());
         setTicker("");
     };
     return (
